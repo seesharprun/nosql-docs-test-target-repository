@@ -1,6 +1,7 @@
 name: "\U0001F4DD Article Request"
 description: "Request a new Markdown article to be created by the AI writing agent."
 labels: ["article-request"]
+title: "[NEW] [ARTICLE] "
 body:
   - type: input
     id: topic
