@@ -22,12 +22,14 @@ jobs:
       - name: Dispatch create-article workflow
         env:
           GH_TOKEN: ${{ steps.relay-app-token.outputs.token }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
         run: |
           gh workflow run create-article.workflow.lock.yml \
             --repo seesharprun/nosql-docs-agentic-side-pr \
             --ref main \
-            --field title="${{ github.event.issue.title }}" \
-            --field article_context="${{ github.event.issue.body }}"
+            --field title="$ISSUE_TITLE" \
+            --field article_context="$ISSUE_BODY"
       - name: Get local GitHub App token
         uses: actions/create-github-app-token@v3
         id: local-app-token
