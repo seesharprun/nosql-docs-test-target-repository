@@ -1,0 +1,37 @@
+name: Relay article request
+on:
+  issues:
+    types: [opened, labeled]
+jobs:
+  dispatch:
+    if: contains(github.event.issue.labels.*.name, 'article-request')
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Get GitHub App token
+        uses: actions/create-github-app-token@v3
+        id: app-token
+        with:
+          client-id: ${{ secrets.RELAY_APP_CLIENT_ID }}
+          private-key: ${{ secrets.RELAY_APP_PRIVATE_KEY }}
+          owner: seesharprun
+          repositories: nosql-docs-agentic-side-pr
+          permission-actions: write
+      - name: Dispatch create-article workflow
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          gh workflow run create-article.workflow.lock.yml \
+            --repo seesharprun/nosql-docs-agentic-side-pr \
+            --ref main \
+            --field article_context="Issue #${{ github.event.issue.number }}: ${{ github.event.issue.title }}
+
+          ${{ github.event.issue.body }}"
+      - name: Acknowledge dispatch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue comment ${{ github.event.issue.number }} \
+            --repo ${{ github.repository }} \
+            --body '🚀 Article request dispatched to the writing agent. A draft PR will appear in this repo when the article is ready.'
