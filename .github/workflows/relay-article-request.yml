@@ -1,17 +1,19 @@
 name: Relay article request
 on:
   issues:
-    types: [opened, labeled]
+    types: [labeled]
 jobs:
   dispatch:
-    if: contains(github.event.issue.labels.*.name, 'article-request')
+    if: >-
+      github.event.label.name == 'article-request' &&
+      !contains(github.event.issue.labels.*.name, 'article-dispatched')
     runs-on: ubuntu-latest
     permissions:
       issues: write
     steps:
       - name: Get GitHub App token
         uses: actions/create-github-app-token@v3
-        id: app-token
+        id: relay-app-token
         with:
           client-id: ${{ secrets.RELAY_APP_CLIENT_ID }}
           private-key: ${{ secrets.RELAY_APP_PRIVATE_KEY }}
@@ -20,7 +22,7 @@ jobs:
           permission-actions: write
       - name: Dispatch create-article workflow
         env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          GH_TOKEN: ${{ steps.relay-app-token.outputs.token }}
         run: |
           gh workflow run create-article.workflow.lock.yml \
             --repo seesharprun/nosql-docs-agentic-side-pr \
@@ -28,9 +30,23 @@ jobs:
             --field article_context="Issue #${{ github.event.issue.number }}: ${{ github.event.issue.title }}
 
           ${{ github.event.issue.body }}"
+      - name: Get Cosmonaut App token
+        uses: actions/create-github-app-token@v3
+        id: local-app-token
+        with:
+          client-id: ${{ secrets.LOCAL_APP_CLIENT_ID }}
+          private-key: ${{ secrets.LOCAL_APP_PRIVATE_KEY }}
+          permission-issues: write
+      - name: Label as dispatched
+        env:
+          GH_TOKEN: ${{ steps.local-app-token.outputs.token }}
+        run: |
+          gh issue edit ${{ github.event.issue.number }} \
+            --repo ${{ github.repository }} \
+            --add-label article-dispatched
       - name: Acknowledge dispatch
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ steps.local-app-token.outputs.token }}
         run: |
           gh issue comment ${{ github.event.issue.number }} \
             --repo ${{ github.repository }} \
