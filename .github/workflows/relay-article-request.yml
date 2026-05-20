@@ -2,17 +2,15 @@ name: Relay article request
 run-name: "📝 Relay #${{ github.event.issue.number }}: ${{ github.event.issue.title }}"
 on:
   issues:
-    types: [labeled]
+    types: [opened]
 jobs:
   dispatch:
-    if: >-
-      github.event.label.name == 'article-request' &&
-      !contains(github.event.issue.labels.*.name, 'article-dispatched')
+    if: contains(github.event.issue.labels.*.name, 'article-request')
     runs-on: ubuntu-latest
     permissions:
       issues: write
     steps:
-      - name: Get GitHub App token
+      - name: Get relay GitHub App token
         uses: actions/create-github-app-token@v3
         id: relay-app-token
         with:
@@ -28,10 +26,9 @@ jobs:
           gh workflow run create-article.workflow.lock.yml \
             --repo seesharprun/nosql-docs-agentic-side-pr \
             --ref main \
-            --field article_context="Issue #${{ github.event.issue.number }}: ${{ github.event.issue.title }}
-
-          ${{ github.event.issue.body }}"
-      - name: Get Cosmonaut App token
+            --field title="${{ github.event.issue.title }}" \
+            --field article_context="${{ github.event.issue.body }}"
+      - name: Get local GitHub App token
         uses: actions/create-github-app-token@v3
         id: local-app-token
         with:
