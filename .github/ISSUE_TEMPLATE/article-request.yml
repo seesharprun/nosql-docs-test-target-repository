@@ -1,0 +1,47 @@
+name: "\U0001F4DD Article Request"
+description: "Request a new Markdown article to be created by the AI writing agent."
+labels: ["article-request"]
+body:
+  - type: input
+    id: topic
+    attributes:
+      label: Topic
+      description: "What is the article about?"
+      placeholder: "e.g. How to use the SELECT clause in Azure Cosmos DB for NoSQL"
+    validations:
+      required: true
+  - type: input
+    id: audience
+    attributes:
+      label: Target audience
+      description: "Who is this article for?"
+      placeholder: "e.g. Beginner developers, database administrators"
+    validations:
+      required: true
+  - type: textarea
+    id: key-points
+    attributes:
+      label: Key points to cover
+      description: "List the main points or sections the article should include."
+      placeholder: |
+        - Overview of the feature
+        - Step-by-step usage
+        - Code examples
+    validations:
+      required: true
+  - type: input
+    id: file-path
+    attributes:
+      label: File path
+      description: "Path relative to the articles/ directory. Leave blank to auto-generate. Example: queries/select-clause.md → articles/queries/select-clause.md"
+      placeholder: "e.g. queries/select-clause.md"
+    validations:
+      required: false
+  - type: textarea
+    id: references
+    attributes:
+      label: References or context
+      description: "Links to related docs, existing articles, or other context that might help."
+      placeholder: "Optional — paste URLs or notes here."
+    validations:
+      required: false

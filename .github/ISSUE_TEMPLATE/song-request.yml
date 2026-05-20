@@ -1,0 +1,54 @@
+name: "\U0001F3B5 Song Request"
+description: "Request a custom AI-generated song on any topic."
+labels: ["song-request"]
+body:
+  - type: input
+    id: song-topic
+    attributes:
+      label: Song topic
+      description: "What should the song be about?"
+      placeholder: "e.g. debugging at 3 AM, deploying on a Friday, coffee"
+    validations:
+      required: true
+  - type: dropdown
+    id: genre
+    attributes:
+      label: Genre
+      description: "Pick a genre (or leave as surprise)."
+      options:
+        - Surprise me
+        - Pop
+        - Rock
+        - Indie folk
+        - Country
+        - Hip-hop
+        - Jazz
+        - Blues
+        - Electronic
+        - Classical
+      default: 0
+    validations:
+      required: false
+  - type: dropdown
+    id: mood
+    attributes:
+      label: Mood
+      description: "What vibe are you going for?"
+      options:
+        - Any
+        - Upbeat
+        - Melancholy
+        - Funny
+        - Epic
+        - Chill
+      default: 0
+    validations:
+      required: false
+  - type: textarea
+    id: extra-details
+    attributes:
+      label: Additional details
+      description: "Anything else the songwriter should know? Specific words, dedications, inside jokes, etc."
+      placeholder: "Optional — leave blank if you have no preferences."
+    validations:
+      required: false
